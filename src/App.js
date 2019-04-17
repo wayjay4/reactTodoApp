@@ -15,11 +15,12 @@ class App extends Component {
   }
 
   componentDidMount(){
-    axios.get('http://localhost:8080/list')
+    axios({
+      url: 'http://localhost:8080/list',
+      method: 'get'
+    })
+    //axios.get('http://localhost:8080/list')
     .then(res => {
-      //console.log("componentDidMount response:");
-      //console.dir(res.data);
-
       // convert response to an array
       var dataArray = [];
       Object.keys(res.data).map(key =>
