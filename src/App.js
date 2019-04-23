@@ -15,23 +15,35 @@ class App extends Component {
   }
 
   componentDidMount(){
+    // get todo data list from api server, then save to state
     axios({
-      url: 'http://localhost:8080/list',
+      url: `http://${apiAddr}/todo`,
       method: 'get'
     })
-    //axios.get('http://localhost:8080/list')
     .then(res => {
       // convert response to an array
       var dataArray = [];
-      Object.keys(res.data).map(key =>
-        dataArray.push({
-          id: key,
-          title: res.data[key],
-          completed: false
-        })
-      );
+      Object.keys(res.data.todos).map(key => {
+        // convert completed String to boolean
+        var completed;
+        (String(res.data.todos[key].completed) === "true") ? completed = true : completed = false;
 
+        // add todo to dataArray
+        dataArray.push({
+          id: res.data.todos[key].id,
+          title: res.data.todos[key].title,
+          completed: completed
+        })
+        return dataArray;
+      });
+
+      // save todo dataArray to state
       this.setState({todos: dataArray});
+    })
+    .catch(function (error) {
+      // handle error
+      console.log("There was an error: ");
+      console.dir(error);
     });
 
   }
@@ -48,9 +60,14 @@ class App extends Component {
 
   // delete todo
   delTodo = (id) => {
-    axios.delete(`http://localhost:8080/entry/${id}`)
+    axios.delete(`http://${apiAddr}/todo/${id}`)
     .then(res => {
       this.setState({ todos: [...this.state.todos.filter(todo => todo.id !== id)] });
+    })
+    .catch(function (error) {
+      // handle error
+      console.log("There was an error: ");
+      console.dir(error);
     });
   }
 
@@ -62,7 +79,7 @@ class App extends Component {
       completed: false
     }
 
-    axios.put(`http://localhost:8080/entry/${newTodo.id}/${newTodo.title}/${newTodo.completed}`, {
+    axios.put(`http://${apiAddr}/todo/${newTodo.id}/${newTodo.title}/${newTodo.completed}`, {
       testKey: newTodo.id,
       testTitle: newTodo.title,
       testCompleted: newTodo.completed
@@ -78,37 +95,6 @@ class App extends Component {
       console.dir(error);
     });
   }
-
-
-    //{
-      //id: uuid.v4(),
-      //title: 'Take out the trash',
-      //completed: false
-    //},
-    //{
-      //id: uuid.v4(),
-      //title: 'Dinner with girlfriend',
-      //completed: false
-    //},
-    //{
-      //id: uuid.v4(),
-      //title: 'Meeting the client',
-      //completed: false
-    //}
-
-    //const newTodo = {
-      //id: uuid.v4(),
-      //title,
-      //completed: false
-    //}
-
-    //axios.post('https://jsonplaceholder.typicode.com/todos', {
-      //title,
-      //completed: false
-    //})
-    //.then(res => {
-      //this.setState({ todos: [...this.state.todos, res.data] });
-    //});
 
   render() {
     return (
@@ -132,5 +118,8 @@ class App extends Component {
     );
   }
 }
+
+const apiAddr = "localhost:8080";
+//const apiAddr = "54.200.156.39"
 
 export default App;
