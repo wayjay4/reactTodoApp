@@ -52,10 +52,23 @@ class App extends Component {
   toggleComplete = (id) => {
     this.setState({ todos: this.state.todos.map(todo => {
       if(todo.id === id){
+        // toggle completed state between [true/false]
         todo.completed = !todo.completed;
+
+        // update data in todo in db
+        axios.put(`http://${apiAddr}/update/todo/${id}/${todo.title}/${todo.completed}`)
+        .then(res => {
+          // do nothing
+        })
+        .catch(function (error) {
+          // handle error
+          console.log("There was an error: ");
+          console.dir(error);
+        });
       }
+
       return todo;
-    }) })
+    })});
   }
 
   // delete todo
