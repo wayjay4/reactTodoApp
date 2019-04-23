@@ -133,6 +133,5 @@ class App extends Component {
 }
 
 const apiAddr = "localhost:8080";
-//const apiAddr = "54.200.156.39"
 
 export default App;
